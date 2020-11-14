@@ -127,6 +127,7 @@ Keyboard bindings for leader key.
     "T"            '(:wk "UI toggles")
     "TM"           '(toggle-frame-maximized :wk "maximize frame")
     "Tm"           '(menu-bar-mode :wk "toggle menu bar")
+    "TF"           '(toggle-frame-fullscreen :wk "toggle fullscreen")
     
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
   ; `windows' category
