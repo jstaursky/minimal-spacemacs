@@ -87,6 +87,9 @@
 
 ;; From https://stackoverflow.com/questions/151945/how-do-i-control-how-emacs-makes-backup-files
 
+;; NOTE: backup files are placed in these folders but to see them you
+;;       must do a 'ls -a .' in the folders. #<file># files are lock
+;;       files and cannot be moved to a separate directory.
 (setq version-control t     ;; Use version numbers for backups.
       kept-new-versions 10  ;; Number of newest versions to keep.
       kept-old-versions 0   ;; Number of oldest versions to keep when a new numbered backup is made.
