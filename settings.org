@@ -33,11 +33,9 @@
 
 * Themes
 #+begin_src emacs-lisp
-(use-package weyland-yutani-theme
-  :load-path "~/clean-emacs/themes/weyland-yutani-theme")
+(use-package weyland-yutani-theme :ensure t)
 
-(use-package doom-themes
-  :ensure t)
+(use-package doom-themes :ensure t)
 
 (load-theme 'weyland-yutani t)
 #+end_src
@@ -321,13 +319,10 @@ Keyboard bindings for leader key.
 # Better syntax highlighting
 #+begin_src emacs-lisp
 (use-package tree-sitter :ensure t
-                                        ;:load-path "~/clean-emacs/lisp/emacs-tree-sitter/lisp"
   :init (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
   :hook ((c-mode c++-mode) . tree-sitter-mode)
   )
-(use-package tree-sitter-langs :ensure t
-                                        ;:load-path "~/clean-emacs/lisp/emacs-tree-sitter/langs"
-  )
+(use-package tree-sitter-langs :ensure t)
 #+end_src
 
 ** auto-complete
@@ -342,31 +337,31 @@ Keyboard bindings for leader key.
 ** delimiters
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters :ensure t
-:hook ((prog-mode) . rainbow-delimiters-mode)
+  :hook ((prog-mode) . rainbow-delimiters-mode)
   )
 (use-package highlight-parentheses :ensure t
-:hook ((prog-mode) . #'highlight-parentheses-mode)
-:config 
-  (setq hl-paren-colors '("#000000" ))  ;"#000000"
-  (setq hl-paren-background-colors '("#8196B1" )) ;"#8F7CFF" #56AD1F #a2b2c6 #9AABC1
+  :hook ((prog-mode) . #'highlight-parentheses-mode)
+  :config 
+  (setq hl-paren-colors '("#000000" ))
+  (setq hl-paren-background-colors '("#8196B1" ))
   )
 #+end_src
 
 ** code folding
 #+begin_src emacs-lisp
 (use-package vimish-fold :ensure t
-:init
+  :init
   (setq vimish-fold-dir (expand-file-name "vimish-fold/" user-emacs-directory))
-:demand t
-:config
+  :demand t
+  :config
   (vimish-fold-global-mode 1))
 
 (use-package hideshow
-:commands (hs-minor-mode
+  :commands (hs-minor-mode
              hs-toggle-hiding)
-:hook (prog-mode . hs-minor-mode)
-:diminish hs-minor-mode
-:config
+  :hook (prog-mode . hs-minor-mode)
+  :diminish hs-minor-mode
+  :config
 
   (defun toggle-fold ()
     "Use `vimish-fold-toggle' if there's a fold at point.
@@ -446,22 +441,6 @@ Keyboard bindings for leader key.
         )
       )
 
-    ;; (spacemacs/rtags-define-keys-for-mode 'c-mode)
-    ;; (spacemacs/rtags-define-keys-for-mode 'c++-mode)
-
-    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m."   "my cmds")
-    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.,"  "rtags-find-references-at-point")
-    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.."  "rtags-find-symbol-at-point")
-    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.<"  "rtags-find-references")
-    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.>"  "rtags-find-symbol")
-
-
-    ;; (spacemacs/declare-prefix-for-mode  'c-mode    "m."   "my cmds")
-    ;; (spacemacs/declare-prefix-for-mode  'c-mode    "m.,"  "rtags-find-references-at-point")
-    ;; (spacemacs/declare-prefix-for-mode  'c-mode    "m.."  "rtags-find-symbol-at-point")
-    ;; (spacemacs/declare-prefix-for-mode  'c-mode    "m.<"  "rtags-find-references")
-    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.>"  "rtags-find-symbol")
-
     :config
     (rtags-enable-standard-keybindings)   ; enable C-c r bindings
 
@@ -496,6 +475,8 @@ Keyboard bindings for leader key.
       (if (not (bound-and-true-p persp-mode))
           (persp-mode 1))
       )
+
+    ;; https://tuhdo.github.io/emacs-frame-peek.html
 
     (defun make-peek-frame (find-definition-function &rest args)
       "Make a new frame for peeking definition"
