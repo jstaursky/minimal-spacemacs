@@ -1,0 +1,519 @@
+#+STARTUP: showall
+
+* Built-in's
+#+begin_src emacs-lisp
+(scroll-bar-mode -1) (menu-bar-mode -1) (tool-bar-mode -1) (blink-cursor-mode 0)
+(transient-mark-mode 1) ;; make mark visible. 
+
+(setq scroll-preserve-screen-position 'always)
+
+;; change typing "yes" or "no" in minibuffer prompts to typing "y" or "n".
+(fset 'yes-or-no 'y-or-n-p)
+
+;; default font.
+(add-to-list 'default-frame-alist '(font . "Source Code Pro-10"))
+
+;; Set the variable width font.
+(face-spec-set 'variable-pitch '((t (:family "Roboto-regular"))) nil)
+
+(setq-default truncate-lines  t
+              standard-indent 4
+              indent-tabs-mode nil)
+
+;; Smooth Scrolling
+(setq-default redisplay-dont-pause t
+              scroll-margin 1
+              scroll-step   1
+              scroll-conservatively 10000
+              scroll-preserve-screen-position 1
+              scroll-up-aggressively   0.01
+              scroll-down-aggressively 0.01)
+
+#+end_src
+
+* Themes
+#+begin_src emacs-lisp
+(use-package weyland-yutani-theme
+  :load-path "~/clean-emacs/themes/weyland-yutani-theme")
+
+(use-package doom-themes
+  :ensure t)
+
+(load-theme 'weyland-yutani t)
+#+end_src
+
+* Keybindings
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-i") 'indent-relative)
+(global-set-key (kbd "C-x F d") 'delete-frame)
+#+end_src
+
+* Auto-Complete 
+#+begin_src emacs-lisp
+(use-package company-posframe :ensure t)
+
+(use-package company :ensure t
+  :demand t
+  :config
+  (company-mode 1)
+  (add-hook 'after-init-hook 'global-company-mode)
+  (define-key company-active-map (kbd "C-h") nil)
+
+  (setq company-require-match  nil
+        company-async-timeout  2
+        company-idle-delay     1
+        company-minimum-prefix-length  2
+        company-global-modes  '(not term-mode org-mode)
+        tab-always-indent     'complete)
+
+  (require 'company-posframe)
+  (company-posframe-mode 1)
+  )
+#+end_src
+
+* General (like Evil Leader)
+Keyboard bindings for leader key.
+#+begin_src emacs-lisp
+(use-package general :ensure t
+  :after (evil helm)
+  :config
+  (general-override-mode)                 ; ensures commands aren't overidden
+  (general-auto-unbind-keys)
+
+  (general-create-definer leader/general/set-key
+    :states '(normal insert visual emacs motion replace)
+    :prefix "SPC"
+    :non-normal-prefix "C-,"
+    )
+
+  (general-define-key
+   :states 'motion
+   :prefix "SPC"
+   "" nil
+   )
+
+  (leader/general/set-key
+    "u"            '(universal-argument :wk "universal arg")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `minibuffer'
+
+    "SPC"          '(helm-M-x :wk "M-x")
+    
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `file' category
+
+    "f"            '(:wk "file")                   
+    "ff"           '(helm-find-files :wk "find file")
+    "fs"           '(save-buffer :wk "save file/buffer")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `file/emacs' category
+
+    "fe"           '(:wk "emacs")
+    "fed"          '((lambda () (interactive) 
+                       (find-file 
+                        (concat user-emacs-directory "settings.org"))) 
+                     :wk "open settings.org")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `toggle' category
+
+    "t"            '(:wk "toggles")
+    "tf"           '(display-fill-column-indicator-mode :wk "toggle fill column indicator")
+    "tn"           '(display-line-numbers-mode :wk "toggle line numbers")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `UI-toggles' category
+
+    "T"            '(:wk "UI toggles")
+    "TM"           '(toggle-frame-maximized :wk "maximize frame")
+    
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `windows' category
+
+    "w"            '(:wk "windows")
+    "w/"           '(split-window-right :wk "split-window-right")
+    "w-"           '(split-window-below :wk "split-window-below")
+    "wd"           '(delete-current-window :wk "delete-window")
+    
+    "wm"           '((lambda () (interactive)
+                       "Maximize buffer then toggle again to regain
+                     previous window layout."
+                       (save-excursion
+                         (if (and (= 1 (length (window-list)))
+                                  (assoc ?_ register-alist))
+                             (jump-to-register ?_)
+                           (progn
+                             (window-configuration-to-register ?_)
+                             (delete-other-windows))))) 
+                     :wk "toggle-maximize-window")
+
+    "0"            '(winum-select-window-0 :wk "select-window-0")
+    "1"            '(winum-select-window-1 :wk "select-window-1")
+    "2"            '(winum-select-window-2 :wk "select-window-2")
+    "3"            '(winum-select-window-3 :wk "select-window-3")
+    "4"            '(winum-select-window-4 :wk "select-window-4")
+    "5"            '(winum-select-window-5 :wk "select-window-5")
+    "6"            '(winum-select-window-6 :wk "select-window-6")
+    "7"            '(winum-select-window-7 :wk "select-window-7")
+    "8"            '(winum-select-window-8 :wk "select-window-8")
+    "9"            '(winum-select-window-9 :wk "select-window-9")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `buffers' category
+
+    "b"     '(:wk "buffers")
+    "bb"    '(helm-mini :wk "list-buffers")
+    "bd"    '(kill-current-buffer :wk "kill-current-buffer")
+
+    "bN"    '((lambda () (interactive) (let ((newbuf (generate-new-buffer "untitled")))
+                                         (switch-to-buffer newbuf nil 'force-same-window)))
+              :wk "new-buffer")
+
+    "bn"    '(next-buffer :wk "next-buffer")
+    "bp"    '(previous-buffer :wk "previous-buffer")
+    
+    "<tab>" '((lambda (&optional window) (interactive) 
+                "Switch back and forth between current and last buffer in the
+              current window."
+                (cl-destructuring-bind (buf start pos)
+                    (or (cl-find (window-buffer window) (window-prev-buffers)
+                                 :key #'car :test-not #'eq)
+                        (list (other-buffer) nil nil))
+                  (if (not buf)
+                      (message "Last buffer not found.")
+                    (set-window-buffer-start-and-point window 
+                                                       buf start pos)))) 
+              :wk "switch-to-previous-buffer")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `jump/join/split'
+
+    "j"  '(:wk "jump/join/split")
+    "jj" '(avy-goto-char-timer :wk "avy-timer")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  ; `search'
+
+    "sc" '(evil-ex-nohighlight :wk "clear highlights")
+
+    ) ;; END `SPC' keybindings
+
+
+  )
+#+end_src
+
+* evil
+#+begin_src emacs-lisp 
+(use-package evil :ensure t
+  :init (setq evil-search-module 'evil-search) 
+  :demand t
+  :config
+  (evil-mode t)
+  
+  (use-package evil-escape :ensure t
+    :demand t
+    :config
+    (evil-escape-mode t)
+    (setq-default evil-escape-key-sequence "fd")
+    )
+  
+  ;; Retain indenting behavior. Tab should stay as is for indenting.
+  (evil-define-key
+    '(normal insert visual replace operator motion emacs)
+    'global
+    (kbd "<tab>") 'indent-for-tab-command)
+  
+  ;; Need to do this to enable jumping
+  (dolist (cmd '(evil-scroll-page-up  evil-scroll-page-down  evil-goto-definition 
+                                      dumb-jump-go
+                                      c-end-of-defun
+                                      c-beginning-of-defun))
+    (evil-add-command-properties cmd :jump t))
+  
+  (setq evil-want-C-i-jump t)
+
+  (defun my-translate-C-i (_prompt)
+    (if (and (= (length (this-single-command-raw-keys)) 1)
+             (eql (aref (this-single-command-raw-keys) 0) ?\C-i)
+             (bound-and-true-p evil-mode)
+             (eq evil-state 'normal))
+        (kbd "<C-i>")
+      (kbd "TAB")))
+
+  (define-key key-translation-map (kbd "TAB") 'my-translate-C-i)
+
+  (with-eval-after-load 'evil-maps
+    (define-key evil-motion-state-map (kbd "<C-i>") 'evil-jump-forward)) 
+
+  )
+#+end_src
+
+
+* helm
+#+begin_src emacs-lisp
+(use-package helm
+  :demand t
+  :config
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (setq helm-autoresize-max-height 30)
+  (setq helm-autoresize-min-height 30)
+
+  ;; Always display buffer on bottom
+  (setq helm-always-two-windows nil)
+  (setq helm-display-buffer-default-height 23)
+  (setq helm-default-display-buffer-functions '(display-buffer-in-side-window))
+  )
+#+end_src
+
+
+* Which-key
+#+begin_src emacs-lisp
+(use-package which-key :ensure t
+  :init 
+  (setq which-key-idle-delay 0.4)
+
+  :demand t
+  :config (which-key-mode)
+  (mapc '(lambda (mode)
+           (which-key-declare-prefixes-for-mode mode
+             "C-c r" "rtags"))
+        '(c++-mode c-mode))
+
+  (push '(("\\(.*\\) 0" . "winum-select-window-0") . ("\\1 0..9" . "window 0..9"))
+        which-key-replacement-alist)
+  (push '((nil . "winum-select-window-[1-9]") . t) which-key-replacement-alist)
+  
+  (defun delete-current-window (&optional arg)
+    "Delete the current window.
+    If the universal prefix argument is used then kill the buffer too."
+    (interactive "P")
+    (if (equal '(4) arg)
+        (kill-buffer-and-window)
+      (delete-window)))
+  )
+#+end_src
+
+* winum
+  Number windows
+#+begin_src emacs-lisp
+(use-package winum :ensure t
+:demand t
+:config 
+  (winum-mode)
+  )
+#+end_src
+
+* avy
+  "Package for jumping to visible text using a char-based decision tree."
+#+begin_src emacs-lisp
+(use-package avy :ensure t
+:config
+  (avy-setup-default)
+  (setq avy-all-windows nil)
+  )
+#+end_src
+
+
+* Programming
+** syntax highlighting
+# Better syntax highlighting
+#+begin_src emacs-lisp
+(use-package tree-sitter :ensure t
+                                        ;:load-path "~/clean-emacs/lisp/emacs-tree-sitter/lisp"
+  :init (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+  :hook ((c-mode c++-mode) . tree-sitter-mode)
+  )
+(use-package tree-sitter-langs :ensure t
+                                        ;:load-path "~/clean-emacs/lisp/emacs-tree-sitter/langs"
+  )
+#+end_src
+
+** auto-complete
+#+begin_src emacs-lisp
+(use-package rtags
+:config
+  (setq rtags-completions-enabled t)
+  (push 'company-rtags company-backends) ;; company-rtags is apart of rtags.
+  )
+#+end_src
+
+** delimiters
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters :ensure t
+:hook ((prog-mode) . rainbow-delimiters-mode)
+  )
+(use-package highlight-parentheses :ensure t
+:hook ((prog-mode) . #'highlight-parentheses-mode)
+:config 
+  (setq hl-paren-colors '("#000000" ))  ;"#000000"
+  (setq hl-paren-background-colors '("#8196B1" )) ;"#8F7CFF" #56AD1F #a2b2c6 #9AABC1
+  )
+#+end_src
+
+** code folding
+#+begin_src emacs-lisp
+(use-package vimish-fold :ensure t
+:init
+  (setq vimish-fold-dir (expand-file-name "vimish-fold/" user-emacs-directory))
+:demand t
+:config
+  (vimish-fold-global-mode 1))
+
+(use-package hideshow
+:commands (hs-minor-mode
+             hs-toggle-hiding)
+:hook (prog-mode . hs-minor-mode)
+:diminish hs-minor-mode
+:config
+
+  (defun toggle-fold ()
+    "Use `vimish-fold-toggle' if there's a fold at point.
+  If not, use `hs-toggle-hiding' instead.
+  If region is active, adds or removes vimish folds."
+    (interactive)
+    (if (region-active-p)
+        (unless
+            (ignore-errors (vimish-fold (region-beginning) (region-end)))
+          (vimish-fold-delete))
+      (unless (delq nil (mapcar #'vimish-fold--toggle (overlays-at (point))))
+        (hs-toggle-hiding))))
+  (bind-key "C-+" 'toggle-fold))
+
+
+#+end_src
+
+
+** C/C++
+#+begin_src emacs-lisp
+(setq-default c-basic-offset  4
+              c-default-style "linux")
+#+end_src
+
+*** rtags
+#+begin_src emacs-lisp
+  (use-package rtags
+    ;; Note that if you recompile and create new compile_commands.json
+    ;; you will need to run "rc -J ." for rtags to reflect the changes.
+    ;; REMEMBER RTAGS DOES NOT WORK FOR PROJECTS INSIDE /tmp
+    :init
+    (add-hook  'c++-mode-hook  #'rtags-start-process-unless-running)
+    (add-hook  'c-mode-hook    #'rtags-start-process-unless-running)
+    (add-hook 'rtags-jump-hook 'evil-set-jump)
+
+    (setq rtags-completions-enabled t)
+
+    (setq lsp-enable-file-watchers nil)
+
+    (defun my/c-c++-tags-find-symbol-at-point (&optional prefix)
+      (interactive "P")
+      (if (and (not (rtags-find-symbol-at-point prefix))
+               rtags-last-request-not-indexed)
+          (gtags-find-tag)))
+
+    (defun my/c-c++-tags-find-references-at-point (&optional prefix)
+      (interactive "P")
+      (if (and (not (rtags-find-references-at-point prefix))
+               rtags-last-request-not-indexed)
+          (gtags-find-rtag)))
+
+    (defun my/c-c++-tags-find-symbol ()
+      (interactive)
+      (call-interactively  'rtags-find-symbol))
+
+    (defun spacemacs/rtags-define-keys-for-mode (mode)
+      (spacemacs/set-leader-keys-for-major-mode mode
+        ".."  'my/c-c++-tags-find-symbol-at-point
+        ".,"  'my/c-c++-tags-find-references-at-point
+        "./"  'rtags-find-all-references-at-point
+        ".<"  '(lambda () (interactive) (call-interactively 'rtags-find-references))
+        ".>"  '(lambda () (interactive) (call-interactively 'rtags-find-symbol))
+
+        ".f"  'rtags-find-symbol-at-point
+        ".r"  'rtags-references-tree
+        ".R"  'rtags-rename-symbol
+        ".T"  'rtags-taglist
+        ".h"  'rtags-print-class-hierarchy
+        ".v"  'rtags-find-virtuals-at-point
+        ".D"  'rtags-print-dependencies
+        ".d"  'rtags-dependency-tree
+        ".C"  'rtags-check-includes
+        ".c"  'c-toggle-comment-style
+        ".H"  'staur|toggle-headerline
+        ".p"  'rtags-peek-definition
+        ".s"  'rtags-show-target-in-other-window
+        )
+      )
+
+    ;; (spacemacs/rtags-define-keys-for-mode 'c-mode)
+    ;; (spacemacs/rtags-define-keys-for-mode 'c++-mode)
+
+    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m."   "my cmds")
+    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.,"  "rtags-find-references-at-point")
+    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.."  "rtags-find-symbol-at-point")
+    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.<"  "rtags-find-references")
+    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.>"  "rtags-find-symbol")
+
+
+    ;; (spacemacs/declare-prefix-for-mode  'c-mode    "m."   "my cmds")
+    ;; (spacemacs/declare-prefix-for-mode  'c-mode    "m.,"  "rtags-find-references-at-point")
+    ;; (spacemacs/declare-prefix-for-mode  'c-mode    "m.."  "rtags-find-symbol-at-point")
+    ;; (spacemacs/declare-prefix-for-mode  'c-mode    "m.<"  "rtags-find-references")
+    ;; (spacemacs/declare-prefix-for-mode  'c++-mode  "m.>"  "rtags-find-symbol")
+
+    :config
+    (rtags-enable-standard-keybindings)   ; enable C-c r bindings
+
+    (advice-add 'rtags-show-in-other-window
+                :around
+                (lambda (oldfn &rest args)
+                  (let ((window (selected-window)))
+                    (apply oldfn args)
+                    (run-at-time ".1 sec" nil `(lambda ()
+                                                 (select-window (get-mru-window 'visible nil t))
+                                                 (recenter)
+                                                 (select-window ,window))))))
+
+    (advice-add 'rtags-references-tree :after (lambda () (pop-to-buffer rtags-buffer-name)))
+
+    (setq rtags-completions-enabled t)
+
+
+    (defun rtags-peek-definition ()
+      "Peek at definition at point using rtags."
+      ;; toggle persp-mode, as this seems to break peek-func.
+      (if (bound-and-true-p persp-mode)
+          (persp-mode -1))
+      ;; begin main section of rtags-peek-definition.
+      (interactive)
+      (let ((func (lambda ()
+                    (rtags-find-symbol-at-point)
+                    (rtags-location-stack-forward))))
+        (rtags-start-process-unless-running)
+        (make-peek-frame func))
+      ;; restore previous state whether persp-mode was active or not.
+      (if (not (bound-and-true-p persp-mode))
+          (persp-mode 1))
+      )
+
+    (defun make-peek-frame (find-definition-function &rest args)
+      "Make a new frame for peeking definition"
+      (when (or (not (rtags-called-interactively-p)) (rtags-sandbox-id-matches))
+        (let (doc-frame x y (abs-pixel-pos (save-excursion (beginning-of-thing 'symbol)
+                                                           (window-absolute-pixel-position))))
+          (setq x (car abs-pixel-pos))
+          (setq y (+ (cdr abs-pixel-pos) (frame-char-height)))
+          (setq doc-frame (make-frame '((minibuffer . nil) (name . "*RTags Peek*")
+                                        (width . 80)       (visibility . nil)
+                                        (height . 15))))
+          (set-frame-position doc-frame x y)
+          (with-selected-frame doc-frame
+            (apply find-definition-function args)
+            (read-only-mode)
+            (recenter-top-bottom 0))
+          (make-frame-visible doc-frame))))
+    ) ; End use-package rtags
+
+#+end_src
+

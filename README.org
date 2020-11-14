@@ -1,0 +1,11 @@
+#+TITLE: Keep only the essentials
+
+
+* Work in progress
+** Features
+- literate org "settings.org" file.
+
+** TODO Features
+- Add magit.
+- Change helm UI and behavior to spacemacs way (but defaults seem okayish).
+- Update org version to latest.
