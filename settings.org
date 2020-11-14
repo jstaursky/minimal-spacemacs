@@ -194,6 +194,7 @@ Keyboard bindings for leader key.
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
   ; `search'
 
+    "s"  '(:wk "search")
     "sc" '(evil-ex-nohighlight :wk "clear highlights")
 
     ) ;; END `SPC' keybindings
@@ -416,30 +417,6 @@ Keyboard bindings for leader key.
     (defun my/c-c++-tags-find-symbol ()
       (interactive)
       (call-interactively  'rtags-find-symbol))
-
-    (defun spacemacs/rtags-define-keys-for-mode (mode)
-      (spacemacs/set-leader-keys-for-major-mode mode
-        ".."  'my/c-c++-tags-find-symbol-at-point
-        ".,"  'my/c-c++-tags-find-references-at-point
-        "./"  'rtags-find-all-references-at-point
-        ".<"  '(lambda () (interactive) (call-interactively 'rtags-find-references))
-        ".>"  '(lambda () (interactive) (call-interactively 'rtags-find-symbol))
-
-        ".f"  'rtags-find-symbol-at-point
-        ".r"  'rtags-references-tree
-        ".R"  'rtags-rename-symbol
-        ".T"  'rtags-taglist
-        ".h"  'rtags-print-class-hierarchy
-        ".v"  'rtags-find-virtuals-at-point
-        ".D"  'rtags-print-dependencies
-        ".d"  'rtags-dependency-tree
-        ".C"  'rtags-check-includes
-        ".c"  'c-toggle-comment-style
-        ".H"  'staur|toggle-headerline
-        ".p"  'rtags-peek-definition
-        ".s"  'rtags-show-target-in-other-window
-        )
-      )
 
     :config
     (rtags-enable-standard-keybindings)   ; enable C-c r bindings
