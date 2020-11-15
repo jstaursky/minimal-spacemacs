@@ -53,7 +53,6 @@
 (use-package company-posframe :ensure t)
 
 (use-package company :ensure t
-  :demand t
   :config
   (company-mode 1)
   (add-hook 'after-init-hook 'global-company-mode)
@@ -75,7 +74,7 @@
 Keyboard bindings for leader key.
 #+begin_src emacs-lisp
 (use-package general :ensure t
-  :after (evil helm vimish-fold)
+  :init (require 'which-key)
   :config
   (general-override-mode)                 ; ensures commands aren't overidden
   (general-auto-unbind-keys)
@@ -206,6 +205,10 @@ Keyboard bindings for leader key.
   )
 #+end_src
 
+* Undo tree
+#+begin_src emacs-lisp
+(use-package undo-tree :ensure t :defer t)
+#+end_src
 * evil
 #+begin_src emacs-lisp 
 (use-package evil :ensure t
@@ -213,6 +216,8 @@ Keyboard bindings for leader key.
   :demand t
   :config
   (evil-mode t)
+  (global-undo-tree-mode)
+  (evil-set-undo-system 'undo-tree)
   
   (use-package evil-escape :ensure t
     :demand t
@@ -276,7 +281,6 @@ Keyboard bindings for leader key.
   :init 
   (setq which-key-idle-delay 0.4)
 
-  :demand t
   :config (which-key-mode)
   (mapc '(lambda (mode)
            (which-key-declare-prefixes-for-mode mode
@@ -301,7 +305,7 @@ Keyboard bindings for leader key.
   Number windows
 #+begin_src emacs-lisp
 (use-package winum :ensure t
-:demand t
+:defer t
 :config 
   (winum-mode)
   )
@@ -492,4 +496,3 @@ Keyboard bindings for leader key.
     ) ; End use-package rtags
 
 #+end_src
-
