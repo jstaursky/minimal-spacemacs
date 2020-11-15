@@ -35,13 +35,15 @@
   (package-refresh-contents))
 
 ;; a list of pkgs to programmatically install.
-(setq my-package-list '(use-package evil helm))
+(setq my-package-list '(use-package org-plus-contrib evil helm))
 
 ;; programmatically install/ensure installed
 ;; pkgs in your personal list
 (dolist (package my-package-list)
   (unless (package-installed-p package)
     (package-install package)))
+
+(require 'use-package) ;; needed to enable ':pin' keyword.
 
 ;; Can now "(use-package pkgname)" for package configuring.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -52,8 +54,7 @@
   (if (file-accessible-directory-p path)
       (add-to-list 'load-path path t)))
 
-
-(use-package org
+(use-package org ;; latest gets installed from 'org-plus-contrib'
   :config
   (setq org-startup-folded nil
         org-src-preserve-indentation t
