@@ -305,8 +305,8 @@ Keyboard bindings for leader key.
   Number windows
 #+begin_src emacs-lisp
 (use-package winum :ensure t
-:defer t
-:config 
+  :defer t
+  :config 
   (winum-mode)
   )
 #+end_src

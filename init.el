@@ -35,7 +35,7 @@
   (package-refresh-contents))
 
 ;; a list of pkgs to programmatically install.
-(setq my-package-list '(use-package org-plus-contrib evil helm))
+(setq my-package-list '(org-plus-contrib use-package evil helm))
 
 ;; programmatically install/ensure installed
 ;; pkgs in your personal list
@@ -55,10 +55,9 @@
       (add-to-list 'load-path path t)))
 
 (use-package org ;; latest gets installed from 'org-plus-contrib'
-  :config
-  (setq org-startup-folded nil
-        org-src-preserve-indentation t
-        org-src-tab-acts-natively t)
+  :config   (setq org-startup-folded nil
+                  org-src-preserve-indentation t
+                  org-src-tab-acts-natively t)
   )
 
 
