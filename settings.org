@@ -29,6 +29,10 @@
               scroll-up-aggressively   0.01
               scroll-down-aggressively 0.01)
 
+;; use default width on left-side, have no fringe on right-side.
+(setq-default fringe-mode '(nil . 0))
+
+)
 #+end_src
 
 * Themes
@@ -73,7 +77,7 @@
 Keyboard bindings for leader key.
 #+begin_src emacs-lisp
 (use-package general :ensure t
-  :after (evil helm)
+  :after (evil helm vimish-fold)
   :config
   (general-override-mode)                 ; ensures commands aren't overidden
   (general-auto-unbind-keys)
@@ -199,6 +203,7 @@ Keyboard bindings for leader key.
     "s"  '(:wk "search")
     "sc" '(evil-ex-nohighlight :wk "clear highlights")
 
+
     ) ;; END `SPC' keybindings
   )
 #+end_src
@@ -223,7 +228,7 @@ Keyboard bindings for leader key.
     '(normal insert visual replace operator motion emacs)
     'global
     (kbd "<tab>") 'indent-for-tab-command)
-  
+
   ;; Need to do this to enable jumping
   (dolist (cmd '(evil-scroll-page-up  evil-scroll-page-down  evil-goto-definition 
                                       dumb-jump-go
@@ -355,6 +360,7 @@ Keyboard bindings for leader key.
 ** code folding
 #+begin_src emacs-lisp
 (use-package vimish-fold :ensure t
+  :after evil
   :init
   (setq vimish-fold-dir (expand-file-name "vimish-fold/" user-emacs-directory))
   :demand t
@@ -362,6 +368,7 @@ Keyboard bindings for leader key.
   (vimish-fold-global-mode 1))
 
 (use-package hideshow
+  :after vimish-fold
   :commands (hs-minor-mode
              hs-toggle-hiding)
   :hook (prog-mode . hs-minor-mode)
@@ -379,8 +386,17 @@ Keyboard bindings for leader key.
           (vimish-fold-delete))
       (unless (delq nil (mapcar #'vimish-fold--toggle (overlays-at (point))))
         (hs-toggle-hiding))))
-  (bind-key "C-+" 'toggle-fold))
 
+  (bind-key "C-+" 'toggle-fold)
+
+  (advice-add 'evil-toggle-fold :override #'toggle-fold)
+
+
+  )
+
+(use-package evil-vimish-fold :ensure t
+  :after vimish-fold
+  :hook ((prog-mode conf-mode text-mode) . evil-vimish-fold-mode))
 
 #+end_src
 
