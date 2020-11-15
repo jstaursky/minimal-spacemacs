@@ -50,9 +50,12 @@
 
 * Auto-Complete 
 #+begin_src emacs-lisp
-(use-package company-posframe :ensure t)
+
 
 (use-package company :ensure t
+  :init
+  (use-package company-posframe :ensure t)
+
   :config
   (company-mode 1)
   (add-hook 'after-init-hook 'global-company-mode)
@@ -74,7 +77,9 @@
 Keyboard bindings for leader key.
 #+begin_src emacs-lisp
 (use-package general :ensure t
-  :init (require 'which-key)
+  :init
+  (use-package which-key :ensure t)
+
   :config
   (general-override-mode)                 ; ensures commands aren't overidden
   (general-auto-unbind-keys)
@@ -278,6 +283,7 @@ Keyboard bindings for leader key.
 * Which-key
 #+begin_src emacs-lisp
 (use-package which-key :ensure t
+  :defer t
   :init 
   (setq which-key-idle-delay 0.4)
 
