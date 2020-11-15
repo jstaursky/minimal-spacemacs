@@ -31,8 +31,6 @@
 
 ;; use default width on left-side, have no fringe on right-side.
 (setq-default fringe-mode '(nil . 0))
-
-)
 #+end_src
 
 * Themes
