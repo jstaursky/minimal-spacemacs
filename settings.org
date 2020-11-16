@@ -48,6 +48,22 @@
 (global-set-key (kbd "C-x F d") 'delete-frame)
 #+end_src
 
+* helm
+#+begin_src emacs-lisp
+(use-package helm
+  :demand t
+  :config
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (setq helm-autoresize-max-height 30)
+  (setq helm-autoresize-min-height 30)
+
+  ;; Always display buffer on bottom
+  (setq helm-always-two-windows nil)
+  (setq helm-display-buffer-default-height 23)
+  (setq helm-default-display-buffer-functions '(display-buffer-in-side-window))
+  )
+#+end_src
+
 * Auto-Complete 
 #+begin_src emacs-lisp
 (use-package company :ensure t
@@ -266,22 +282,6 @@ Keyboard bindings for leader key.
   )
 #+end_src
 
-
-* helm
-#+begin_src emacs-lisp
-(use-package helm
-  :demand t
-  :config
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (setq helm-autoresize-max-height 30)
-  (setq helm-autoresize-min-height 30)
-
-  ;; Always display buffer on bottom
-  (setq helm-always-two-windows nil)
-  (setq helm-display-buffer-default-height 23)
-  (setq helm-default-display-buffer-functions '(display-buffer-in-side-window))
-  )
-#+end_src
 
 
 * Which-key
