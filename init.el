@@ -39,6 +39,20 @@
 ;; Can now "(use-package pkgname)" for package configuring.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package helm
+   :config
+   (setq helm-autoresize-max-height 30)
+   (setq helm-autoresize-min-height 30)
+
+   ;; Always display buffer on bottom
+   (setq helm-always-two-windows nil)
+   (setq helm-display-buffer-default-height 23)
+   (setq helm-default-display-buffer-functions '(display-buffer-in-side-window))
+  
+   :bind ("M-x" . 'helm-M-x))
+
+
+
 (use-package org-plus-contrib)
 
 (use-package org ;; 'org-plus-contrib' should install latest org version.
