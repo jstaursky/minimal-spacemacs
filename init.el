@@ -1,62 +1,47 @@
-;; NOTE: You may need to run following shell commands to create some
-;;       files that are expected to exist in your user-emacs-directory
-;;       $ touch custom.el
-;;       $ mkdir elpa-<emacs-version> (e.g. 'elpa-28')
-;;       $ touch settings.org
-;; Probably forgetting one but it will be obvious if an error pops up.       
-
 ;; Do not use `init.el` for `custom-*` code - use `custom.el`.
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (when (file-exists-p custom-file)
   (load-file custom-file))
 
-
-;; Require and initialize `package`.
-(require 'package)
-
-;; set package.el repositories.
-(setq package-archives
-      '(("org"   . "https://orgmode.org/elpa/")
-        ("gnu"   . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")))
-
-;; Put downloaded packages inside "<user-emacs-directory>/elpa-<version>".
-(let ((path (format
-             (concat user-emacs-directory "elpa-%s") emacs-major-version)))
+;; For local packages, add them to load path.
+(let ((path
+       (expand-file-name "lisp"))) ;; i.e. <user-emacs-directory>/lisp
   (if (file-accessible-directory-p path)
-      (setq package-user-dir path)))
+      (add-to-list 'load-path path t)))
 
-;; initialize built-in package management.
-(package-initialize)
+;; Setup straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; update packages list if we are on a new install.
-(unless package-archive-contents
-  (package-refresh-contents))
+;; Make each use-package form also invoke straight.el to install the package.
+;; Default is to try installing a package by the same name as the feature.
+;; Now do not have to specify ':straight' for each use of 'use-package'
+(setq straight-use-package-by-default t)
+(setq straight-enable-use-package-integration t)
 
-;; a list of pkgs to programmatically install.
-(setq my-package-list '(org-plus-contrib use-package evil helm))
+;; Download and install use-package
+(straight-use-package 'use-package)
+;; ':ensure' is incompatible with straight.el. Need to disable.
+(setq use-package-always-ensure nil)
 
-;; programmatically install/ensure installed
-;; pkgs in your personal list
-(dolist (package my-package-list)
-  (unless (package-installed-p package)
-    (package-install package)))
-
-(require 'use-package) ;; needed to enable ':pin' keyword.
 
 ;; Can now "(use-package pkgname)" for package configuring.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; For packages not installed via elpa, need to add them to load path.
-(let ((path 
-       (expand-file-name "lisp"))) ;; i.e. <user-emacs-directory>/lisp  
-  (if (file-accessible-directory-p path)
-      (add-to-list 'load-path path t)))
+(use-package org-plus-contrib)
 
-
-
-(use-package org ;; latest gets installed from 'org-plus-contrib'
+(use-package org ;; 'org-plus-contrib' should install latest org version.
   :config   (setq org-startup-folded nil
                   org-src-preserve-indentation t
                   org-src-tab-acts-natively t)
@@ -64,11 +49,11 @@
 
 
 ;; Configure rest of packages in "settings.org" file.
-(org-babel-load-file
+;;(org-babel-load-file
  ;; NOTE: settings.org must contain at least one "#+begin_src emacs-lisp"
  ;;       block for there to be no error on startup.
- (expand-file-name "settings.org"
-                   user-emacs-directory))
+; (expand-file-name "settings.org"
+;                   user-emacs-directory))
 ;;
 ;; MISC NOISE PUT HERE SO "settings.org" is not polluted.
 ;;
