@@ -1,0 +1,56 @@
+#+TITLE: BACKUP SETTINGS
+
+Created based off on https://stackoverflow.com/questions/151945/how-do-i-control-how-emacs-makes-backup-files
+
+#+begin_src emacs-lisp
+  ;;; backup-settings.el --- backup file(s) editor settings -*- lexical-binding: t -*-
+
+(setq make-backup-files t)
+
+;; Default and per-save backups go here:
+(setq-default backup-directory-alist
+              `((".*" . ,(expand-file-name (concat user-emacs-directory "backup")))))
+(setq-default auto-save-file-name-transforms
+              `((".*" ,(expand-file-name (concat user-emacs-directory "backup")) nil)))
+
+#+end_src
+
+Place backup files in <user-emacs-directory>/backup.
+#+begin_src emacs-lisp
+;; From https://stackoverflow.com/questions/151945/how-do-i-control-how-emacs-makes-backup-files
+
+;; NOTE: backup files are placed in these folders but to see them you
+;;       must do a 'ls -a .' in the folders. #<file># files are lock
+;;       files and cannot be moved to a separate directory.
+(setq version-control t     ;; Use version numbers for backups.
+      kept-new-versions 5   ;; Number of newest versions to keep.
+      kept-old-versions 0   ;; Number of oldest versions to keep when a new numbered backup is made.
+      delete-old-versions t ;; Don't ask to delete excess backup versions.
+      backup-by-copying t)  ;; Copy all files, don't rename them.
+
+(setq vc-make-backup-files t)
+#+end_src
+
+Create a backup of each file currently open. There are two types:
+- /per session/ backup at the first save of each emacs session.
+- /per save/ backup on each save.
+  - A "per save" backup is created upon each save. The first save results in
+    both a per-session and a per-save backup, to keep the numbering of per-save
+    backups consistent.
+#+begin_src emacs-lisp
+(defun force-buffer-backup ()
+  (when (not buffer-backed-up)
+    (let ((backup-directory-alist
+           `((".*" .
+              ,(concat (expand-file-name (concat user-emacs-directory "backup")) "/session"))))
+          (kept-new-versions 3))
+      (backup-buffer)))
+  (let ((buffer-backed-up nil))
+    (backup-buffer)))
+#+end_src
+
+* EOF (`provide' This Package)
+#+begin_src emacs-lisp
+(add-hook 'before-save-hook 'force-buffer-backup)
+(provide 'backup-settings)
+#+end_src

@@ -1,0 +1,61 @@
+#+TITLE: org-mode Settings
+
+
+#+begin_src emacs-lisp
+;;; org-init.el --- org-mode settings -*- lexical-binding: t -*-
+(setq org-startup-folded            nil  ; Do not start org outline as folded.
+      org-startup-indented          t    ; Indent text according to outline structure.
+      org-hide-emphasis-markers     t)   ; Hide *bold*, _under_, etc, markers.
+#+end_src
+
+Setup font faces so that src code blocks are in a monospace font whereas text is
+in a proportional font.
+
+#+begin_src emacs-lisp
+(use-package mixed-pitch
+  :init
+  `(set-face-font 'fixed-pitch ,dotspacemacs-default-font)
+  (set-face-font 'variable-pitch "Amazon Ember")
+  :hook (org-mode . mixed-pitch-mode)
+  )
+#+end_src
+
+* pdf exporting
+#+begin_src emacs-lisp
+(setq org-latex-pdf-process '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                              "bibtex %b"
+                              "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                              "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package reftex
+  :commands turn-on-reftex
+  :init
+  (setq reftex-plug-intoAUCTex t))
+
+(use-package org-ref
+  :requires org)
+#+end_src
+
+* source code block settings
+#+begin_src emacs-lisp
+(setq-default org-src-fontify-natively      t
+              org-src-tab-acts-natively     t
+              org-src-preserve-indentation  t)
+#+end_src
+
+
+* Org
+#+begin_src emacs-lisp
+(use-package org
+  :config
+  (setq org-latex-listings 'minted)
+  (add-to-list 'org-latex-packages-alist '("" "minted" t))
+  )
+#+end_src
+
+* EOF (`provide' This Package)
+#+begin_src emacs-lisp
+(provide 'org-init)
+#+end_src

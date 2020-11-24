@@ -1,11 +1,14 @@
-#+TITLE: Keep only the essentials
+#+TITLE: MINIMAL SPACEMACS
 
-
-* Work in progress
-** Features
-- literate org "settings.org" file.
-
-** TODO Features
-- Add magit.
-- Change helm UI and behavior to spacemacs way (but defaults seem okayish).
-- Update org version to latest.
+#+begin_src text
+spacemacs
+.
+├── .emacs.d (contains the contents of 'git clone https://github.com/syl20bnr/spacemacs')
+│   └── custom.el (also contains)
+├── init.el
+└── settings
+    ├── backup-settings.org
+    ├── c-c++-settings.org
+    ├── org-init.org
+    └── preferences.org
+#+end_src
