@@ -17,8 +17,8 @@ spacemacs
 For use with https://github.com/plexus/chemacs
 #+begin_src elisp
 (
- ("spacemacs" . ((user-emacs-directory . "~/spacemacs-2.0/.emacs.d")
-		         (env . (("SPACEMACSDIR" . "~/spacemacs-2.0")))))
+ ("spacemacs" . ((user-emacs-directory . "~/spacemacs/.emacs.d")
+		         (env . (("SPACEMACSDIR" . "~/spacemacs")))))
  )
 #+end_src
 
