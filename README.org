@@ -12,3 +12,17 @@ spacemacs
     ├── org-init.org
     └── preferences.org
 #+end_src
+
+* .emacs-profiles.el
+For use with https://github.com/plexus/chemacs
+#+begin_src elisp
+(
+ ("spacemacs" . ((user-emacs-directory . "~/spacemacs-2.0/.emacs.d")
+		         (env . (("SPACEMACSDIR" . "~/spacemacs-2.0")))))
+ )
+#+end_src
+
+Then run
+#+begin_src shell
+emacs --with-profile spacemacs
+#+end_src
