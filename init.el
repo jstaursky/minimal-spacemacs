@@ -514,8 +514,10 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
   ;; Place new compilations in <user-emacs-directory>/comp-eln
-  (let (eln-directory (files--ensure-directory (expand-file-name "comp-eln" user-emacs-directory)))
-    (add-to-list 'comp-eln-load-path eln-directory))
+  (let ((path
+         (expand-file-name "comp-eln" user-emacs-directory)))
+    (if (file-accessible-directory-p path)
+        (add-to-list 'load-path path t)))
 
   ;; Do not use `init.el` for `custom-*` code - use `custom.el`.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
