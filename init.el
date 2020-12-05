@@ -9,7 +9,7 @@ This function should only modify configuration layer settings."
    ;; Base distribution to use. This is a layer contained in the directory
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
-   dotspacemacs-distribution 'spacemacs
+   dotspacemacs-distribution 'spacemacs ;spacemacs
 
    ;; Lazy installation of layers (i.e. layers are installed only when a file
    ;; with a supported type is opened). Possible values are `all', `unused'
@@ -32,12 +32,18 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(html
+     ;; ----------------------------------------------------------------
+     ;; Example of useful layers you may want to use right away.
+     ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
+     ;; `M-m f e R' (Emacs style) to install them.
+     ;; ----------------------------------------------------------------
      auto-completion
      ;; better-defaults
      emacs-lisp
      git
      helm
+
      ;; lsp
      ;; markdown
      ;; multiple-cursors
@@ -61,10 +67,19 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages
    '(
+     diff-hl
+     nasm-mode
+     evil-escape
+     winum
      weyland-yutani-theme
      mixed-pitch
      org-ref
      rtags
+     tree-sitter
+     tree-sitter-langs
+     (wolfram-mode
+      :fetcher github
+      :repo "https://github.com/lecopivo/wolfram-mode")
      )
 
    ;; A list of packages that cannot be updated.
@@ -498,6 +513,10 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
+  ;; Place new compilations in <user-emacs-directory>/comp-eln
+  (let (eln-directory (files--ensure-directory (expand-file-name "comp-eln" user-emacs-directory)))
+    (add-to-list 'comp-eln-load-path eln-directory))
+
   ;; Do not use `init.el` for `custom-*` code - use `custom.el`.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (when (file-exists-p custom-file)
@@ -576,6 +595,21 @@ before packages are loaded."
     (org-babel-load-file
      (expand-file-name (format "settings/%s.org" pkg) dotspacemacs-directory))
     `(use-package ,pkg))
+; 
+
+  (use-package diff-hl
+    :after magit
+    :hook ((magit-pre-refresh . diff-hl-magit-pre-refresh)
+           (magit-post-refresh . diff-hl-magit-post-refresh))
+    :config
+    (global-diff-hl-mode)
+    )
+
+
+; 
+  (use-package wolfram-mode
+    :mode "\\.wls\\'")
+
 ; 
 ; EOF
   )

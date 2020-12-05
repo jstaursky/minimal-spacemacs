@@ -29,6 +29,14 @@ Prefer utf-8 encoding.
       window-combination-resize       nil)
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package evil-escape
+  :demand t
+  :config
+  (evil-escape-mode t)
+  (setq-default evil-escape-key-sequence "fd")
+  )
+#+end_src
 
 * EOF (`provide' This Package)
 #+begin_src emacs-lisp

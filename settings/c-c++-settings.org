@@ -6,7 +6,15 @@
               c-basic-offset 4)
 #+end_src
 
+* Assembly
+** Nasm
+#+begin_src emacs-lisp
+(use-package nasm-mode
+  :mode "\\.asm\\'")
+#+end_src
+
 * code formating
+
 #+begin_src emacs-lisp
 (defun astyle-region (pmin pmax)
   (interactive "r")
@@ -16,6 +24,13 @@
                            (get-buffer-create "*Astyle Errors*") t))
 #+end_src
 
+* Syntax Highlighting
+#+begin_src emacs-lisp
+(use-package tree-sitter
+  :hook ((c-mode c++-mode) . tree-sitter-hl-mode))
+(use-package tree-sitter-langs)
+#+end_src
+
 * rtags
 #+begin_src emacs-lisp
 (use-package rtags
@@ -23,15 +38,16 @@
   ;; Note that if you recompile and create new compile_commands.json
   ;; you will need to run "rc -J ." for rtags to reflect the changes.
   ;; REMEMBER RTAGS DOES NOT WORK FOR PROJECTS INSIDE /tmp
-  :hook 
+  :hook
   (((c-mode c++-mode) . rtags-start-process-unless-running)
    ((c-mode c++-mode) . electric-pair-mode) ; auto pair '(', '{', '['
+
    (rtags-jump . evil-set-jump))
-    
+
   :init
-  
+
   (setq rtags-completions-enabled t)
-  (setq lsp-enable-file-watchers nil) 
+  (setq lsp-enable-file-watchers nil)
 
   (defun my/c-c++-tags-find-symbol-at-point (&optional prefix)
     (interactive "P")
@@ -75,7 +91,7 @@
                         ("m.." . "rtags-find-symbol-at-point")
                         ("m.<" . "rtags-find-references")
                         ("m.>" . "rtags-find-symbol")))
-  
+
   (loop for (pfx . name) in mode-prefixes
         collect (progn
         (spacemacs/declare-prefix-for-mode  'c++-mode pfx name)
@@ -83,6 +99,8 @@
 
   :config
 
+  (c-toggle-comment-style -1)
+  
   (advice-add 'rtags-show-in-other-window
    :around
     (lambda (oldfn &rest args)
@@ -92,13 +110,13 @@
                            (recenter)
                            (select-window ,window))))))
 
-  (advice-add 'rtags-find-symbol-at-point 
+  (advice-add 'rtags-find-symbol-at-point
    :around (lambda (oldfn &rest args)
              (apply oldfn args)
              (run-at-time ".1 sec" nil #'recenter)
              (redraw-display)))
 
-  (advice-add 'rtags-references-tree 
+  (advice-add 'rtags-references-tree
    :after (lambda () (pop-to-buffer rtags-buffer-name)))
 
 
